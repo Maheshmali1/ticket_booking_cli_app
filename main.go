@@ -8,8 +8,14 @@ import (
 const conferenceTickets int = 50
 
 var remainingTickets = conferenceTickets
-var ticketBuyers = []string{}
-var ticketBoughts = []int{}
+var ticketBuyers = make([]userData, 0)
+
+type userData struct {
+	firstName   string
+	lastName    string
+	email       string
+	userTickets int
+}
 
 func main() {
 	greetUsers()
@@ -21,7 +27,7 @@ func main() {
 		isValidName, isValidEmail, isValidTicketNumber := shared.ValidateUserInputs(firstName, lastName, email, userTickets, remainingTickets)
 
 		if isValidName && isValidEmail && isValidTicketNumber {
-			bookTickets(firstName, lastName, userTickets)
+			bookTickets(firstName, lastName, email, userTickets)
 		} else {
 
 			fmt.Println("Your inputs are invalid.. Please try again...")
@@ -47,7 +53,6 @@ func main() {
 	}
 
 	conferenceBookingEndingResponse()
-
 }
 
 func greetUsers() {
@@ -55,17 +60,22 @@ func greetUsers() {
 	fmt.Printf("We have total of %v tickets for conference\n", conferenceTickets)
 }
 
-func bookTickets(firstName string, lastName string, userTickets int) {
+func bookTickets(firstName string, lastName string, email string, userTickets int) {
 	remainingTickets = remainingTickets - userTickets
-	ticketBuyers = append(ticketBuyers, firstName+" "+lastName)
-	ticketBoughts = append(ticketBoughts, userTickets)
+	user := userData{
+		firstName:   firstName,
+		lastName:    lastName,
+		email:       email,
+		userTickets: userTickets,
+	}
+	ticketBuyers = append(ticketBuyers, user)
 	fmt.Printf("Thank you %v for booking %v tickets.\n", firstName+" "+lastName, userTickets)
 }
 
 func conferenceBookingEndingResponse() {
 	fmt.Println("******* Conference ticket booking is over! ******* ")
 	fmt.Println("🚀🚀 Welcome gophers to conference!")
-	for index, value := range ticketBuyers {
-		fmt.Printf("Gopher 👨‍💻: %v has booked %v tickets...\n", value, ticketBoughts[index])
+	for _, value := range ticketBuyers {
+		fmt.Printf("Gopher 👨‍💻: %v has booked %v tickets...\n", value.firstName+" "+value.lastName, value.userTickets)
 	}
 }
