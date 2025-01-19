@@ -1,7 +1,3 @@
-Here’s a draft for the README of your GitHub project:
-
----
-
 # Ticket Booking CLI Application 🎫
 
 A simple Command-Line Interface (CLI) application written in Go for managing ticket bookings. This project is designed to demonstrate the fundamentals of Go, including user input handling, validation, concurrency, and more.
