@@ -2,13 +2,16 @@ package main
 
 import (
 	"fmt"
+	"sync"
 	"ticket-booking-app/shared"
+	"time"
 )
 
 const conferenceTickets int = 50
 
 var remainingTickets = conferenceTickets
 var ticketBuyers = make([]userData, 0)
+var waitGroup = sync.WaitGroup{}
 
 type userData struct {
 	firstName   string
@@ -51,7 +54,7 @@ func main() {
 			break
 		}
 	}
-
+	waitGroup.Wait()
 	conferenceBookingEndingResponse()
 }
 
@@ -69,6 +72,8 @@ func bookTickets(firstName string, lastName string, email string, userTickets in
 		userTickets: userTickets,
 	}
 	ticketBuyers = append(ticketBuyers, user)
+	waitGroup.Add(1)
+	go sendTicketsToUser(user)
 	fmt.Printf("Thank you %v for booking %v tickets.\n", firstName+" "+lastName, userTickets)
 }
 
@@ -78,4 +83,13 @@ func conferenceBookingEndingResponse() {
 	for _, value := range ticketBuyers {
 		fmt.Printf("Gopher 👨‍💻: %v has booked %v tickets...\n", value.firstName+" "+value.lastName, value.userTickets)
 	}
+}
+
+func sendTicketsToUser(user userData) {
+	emailBody := fmt.Sprintf("Hello %v %v, \nYou have booked %v tickets for conference.\nYou can contact us at: abc@example.com\n", user.firstName, user.lastName, user.userTickets)
+
+	fmt.Println("Sending ticket:\n", emailBody)
+	time.Sleep(10 * time.Second)
+	fmt.Println("Ticket has been sent to", user.email)
+	waitGroup.Done()
 }
